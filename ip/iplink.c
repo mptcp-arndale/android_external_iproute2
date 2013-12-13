@@ -337,14 +337,21 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req,
 			req->i.ifi_change |= IFF_MPHANDOVER;
 			if (strcmp(*argv, "on") == 0) {
 				req->i.ifi_flags &= ~IFF_NOMULTIPATH;
+				req->i.ifi_flags &= ~IFF_MPBACKUP;
+				req->i.ifi_flags &= ~IFF_MPHANDOVER;
 			} else if (strcmp(*argv, "off") == 0) {
 				req->i.ifi_flags |= IFF_NOMULTIPATH;
 			} else if (strcmp(*argv, "backup") == 0) {
+				req->i.ifi_flags &= ~IFF_NOMULTIPATH;
 				req->i.ifi_flags |= IFF_MPBACKUP;
 			} else if (strcmp(*argv, "handover") == 0) {
+				req->i.ifi_flags &= ~IFF_NOMULTIPATH;
 				req->i.ifi_flags |= IFF_MPHANDOVER;
-			} else
-				return on_off("multipath");
+			} else {
+				fprintf(stderr, "Error: argument of \"multipath\" must be"
+						"\"on\", \"off\", \"backup\" or \"handover\"\n");
+				return -1;
+			}
 		} else if (strcmp(*argv, "promisc") == 0) {
 			NEXT_ARG();
 			req->i.ifi_change |= IFF_PROMISC;
